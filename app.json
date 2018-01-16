@@ -1,7 +1,6 @@
 {
   "expo": {
-    "name": "todo",
-    "description": "This project is really great.",
+    "name": "مهامي",
     "slug": "todo",
     "privacy": "public",
     "sdkVersion": "24.0.0",
@@ -16,6 +15,9 @@
     },
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.fnyan.todo"
     }
   }
 }
