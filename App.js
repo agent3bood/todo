@@ -45,6 +45,9 @@ export default class App extends React.Component {
   }
 
   addTodo() {
+    if(this.state.input == ""){
+      return
+    }
     db.transaction(
       tx => {
         tx.executeSql('insert into todos (value) values (?)',
