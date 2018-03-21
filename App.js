@@ -48,20 +48,19 @@ export default class App extends React.Component {
   }
 
   addTodo() {
-    if (this.state.input.value == "") {
-      return
+    if (this.state.input.value) {
+      db.transaction(
+        tx => {
+          tx.executeSql('insert into todos (value) values (?)',
+            [this.state.input.value],
+            () => {
+              this.setState({ input: {} })
+              this.update()
+            }
+          )
+        }
+      )
     }
-    db.transaction(
-      tx => {
-        tx.executeSql('insert into todos (value) values (?)',
-          [this.state.input.value],
-          () => {
-            this.setState({ input: {} })
-            this.update()
-          }
-        )
-      }
-    )
   }
 
   deleteTodo(id) {
