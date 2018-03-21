@@ -25,6 +25,7 @@ export default class App extends React.Component {
     this.addTodo = this.addTodo.bind(this)
     this.deleteTodo = this.deleteTodo.bind(this)
     this.updateInput = this.updateInput.bind(this)
+    this.onTodoPress = this.onTodoPress.bind(this)
   }
 
   update() {
@@ -51,8 +52,8 @@ export default class App extends React.Component {
     if (this.state.input.value) {
       db.transaction(
         tx => {
-          tx.executeSql('insert into todos (value) values (?)',
-            [this.state.input.value],
+          tx.executeSql('insert or replace into todos (id, value) values (?, ?)',
+            [this.state.input.id, this.state.input.value],
             () => {
               this.setState({ input: {} })
               this.update()
@@ -80,6 +81,10 @@ export default class App extends React.Component {
     });
     this.setState({ input: newInput })
   }
+  onTodoPress(item) {
+    this.setState({ input: item })
+    this.todoInput.focus()
+  }
 
   render() {
     return (
@@ -92,6 +97,9 @@ export default class App extends React.Component {
             value={this.state.input.value}
             onChangeText={value => this.updateInput(value)}
             onSubmitEditing={() => this.addTodo()}
+            ref={input => {
+              this.todoInput = input;
+            }}
           />
         </View>
         <ScrollView style={styles.list}>
@@ -101,6 +109,7 @@ export default class App extends React.Component {
                 <ListItem
                   key={item.id}
                   title={item.value}
+                  onPress={() => this.onTodoPress(item)}
                   titleNumberOfLines={100}
                   titleStyle={{ textAlign: 'right' }}
                   leftIcon={{ type: 'feather', name: 'trash' }}
