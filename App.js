@@ -7,21 +7,24 @@ import {
 } from 'react-native'
 import { Constants, SQLite } from 'expo'
 import { List, ListItem, FormInput } from 'react-native-elements'
+import update from 'immutability-helper';
 
 
 const db = SQLite.openDatabase('todo.db')
 
 
 export default class App extends React.Component {
+  // todo item = {value: "", id: int}
   constructor(props) {
     super(props)
     this.state = {
-      input: '',
+      input: {},
       list: []
     }
     this.update = this.update.bind(this)
     this.addTodo = this.addTodo.bind(this)
     this.deleteTodo = this.deleteTodo.bind(this)
+    this.updateInput = this.updateInput.bind(this)
   }
 
   update() {
@@ -45,15 +48,15 @@ export default class App extends React.Component {
   }
 
   addTodo() {
-    if(this.state.input == ""){
+    if (this.state.input.value == "") {
       return
     }
     db.transaction(
       tx => {
         tx.executeSql('insert into todos (value) values (?)',
-          [this.state.input],
+          [this.state.input.value],
           () => {
-            this.setState({ input: '' })
+            this.setState({ input: {} })
             this.update()
           }
         )
@@ -72,6 +75,13 @@ export default class App extends React.Component {
     )
   }
 
+  updateInput(value) {
+    const newInput = update(this.state.input, {
+      value: { $set: value }
+    });
+    this.setState({ input: newInput })
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -80,8 +90,8 @@ export default class App extends React.Component {
           <FormInput
             inputStyle={{ textAlign: 'center' }}
             placeholder='ماذا تريد ان تفعل اليوم!'
-            value={this.state.input}
-            onChangeText={input => this.setState({ input })}
+            value={this.state.input.value}
+            onChangeText={value => this.updateInput(value)}
             onSubmitEditing={() => this.addTodo()}
           />
         </View>
