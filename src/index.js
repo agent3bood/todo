@@ -13,7 +13,7 @@ const uuidv4 = require('uuid/v4');
 import {addTodo, toggleTodo } from './actions'
 
 
-const db = SQLite.openDatabase('todo.db')
+
 
 class App extends React.Component {
     constructor(props) {
@@ -21,33 +21,24 @@ class App extends React.Component {
       this.state = {
         todo: {id: null, text: "", completed: false}
       }
+      this.resetInput = this.resetInput.bind(this)
     //   this.update = this.update.bind(this)
     //   this.addTodo = this.addTodo.bind(this)
     //   this.deleteTodo = this.deleteTodo.bind(this)
     //   this.updateInput = this.updateInput.bind(this)
-    //   this.onTodoPress = this.onTodoPress.bind(this)
+      this.onTodoPress = this.onTodoPress.bind(this)
     }
   
     // update() {
-    //   db.transaction(tx => {
-    //     tx.executeSql(
-    //       `select * from todos;`,
-    //       null,
-    //       (_, { rows: { _array } }) => this.setState({ list: _array })
-    //     )
-    //   })
+      // db.transaction(tx => {
+      //   tx.executeSql(
+      //     `select * from todos;`,
+      //     null,
+      //     (_, { rows: { _array } }) => this.setState({ list: _array })
+      //   )
+      // })
     // }
-  
-    // componentDidMount() {
-    //   db.transaction(tx => {
-    //     tx.executeSql(
-    //       'create table if not exists todos (id integer primary key not null, value text);',
-    //       null,
-    //       this.update()
-    //     )
-    //   })
-    // }
-  
+   
     // addTodo() {
     //   if (this.state.input.value) {
     //     db.transaction(
@@ -63,8 +54,8 @@ class App extends React.Component {
     //     )
     //   }
     // }
-  
-    // deleteTodo(id) {
+
+        // deleteTodo(id) {
     //   db.transaction(
     //     tx => {
     //       tx.executeSql('delete from todos where id = ?;',
@@ -74,6 +65,36 @@ class App extends React.Component {
     //     }
     //   )
     // }
+
+    componentDidMount() {
+      try{
+        const db = SQLite.openDatabase('todo.db')
+        // migrate to new redux
+        db.transaction(tx => {
+          tx.executeSql(
+            `select * from todos;`,
+            null,
+            (_, { rows: { _array } }) => {
+              // this.setState({ list: _array })
+              _array.map(val=>{
+                console.log(val)
+                this.props.addTodo({text:val.value})
+                db.transaction(tx2 =>{
+                  tx2.executeSql('delete from todos where id = ?;',
+                  [val.id]
+                )
+                })
+              })
+            }
+          )
+        })
+      }
+      catch(err){
+        console.log(err)
+      }
+    }
+  
+
   
     // updateInput(value) {
     //   const newInput = update(this.state.input, {
@@ -81,15 +102,20 @@ class App extends React.Component {
     //   });
     //   this.setState({ input: newInput })
     // }
-    // onTodoPress(item) {
-    //   this.setState({ input: item })
-    //   this.todoInput.focus()
-    // }
+
+    onTodoPress({id,text,completed}) {
+      this.setState({ todo:{id, text, completed} })
+      this.todoInput.focus()
+    }
+
+    resetInput(){
+      this.setState({todo: {id: null, text: "", completed: false}})
+    }
   
     render() {
-        console.log(uuidv4())
-        console.log(this.state)
-        console.log(this.props)
+        // console.log(uuidv4())
+        // console.log(this.state)
+        // console.log(this.props)
         const todos = this.props.todos.filter((item)=>{
             return !item.completed
         })
@@ -106,7 +132,10 @@ class App extends React.Component {
                   todo.text = value
                   this.setState({todo})
               }}
-              onSubmitEditing={()=>{this.props.addTodo(this.state.todo)}}
+              onSubmitEditing={()=>{
+                this.props.addTodo(this.state.todo)
+                this.resetInput()
+              }}
               ref={input => {
                 this.todoInput = input;
               }}
@@ -123,7 +152,6 @@ class App extends React.Component {
                     titleNumberOfLines={100}
                     titleStyle={{ textAlign: 'right' }}
                     leftIcon={{ type: 'feather', name: 'trash' }}
-                    // leftIconOnPress={() => this.deleteTodo(item.id)}
                     leftIconOnPress={() => this.props.toggleTodo(item.id)}
 
                     rightIcon={<View />}
