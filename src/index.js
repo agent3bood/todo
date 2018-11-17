@@ -22,49 +22,8 @@ class App extends React.Component {
         todo: {id: null, text: "", completed: false}
       }
       this.resetInput = this.resetInput.bind(this)
-    //   this.update = this.update.bind(this)
-    //   this.addTodo = this.addTodo.bind(this)
-    //   this.deleteTodo = this.deleteTodo.bind(this)
-    //   this.updateInput = this.updateInput.bind(this)
       this.onTodoPress = this.onTodoPress.bind(this)
     }
-  
-    // update() {
-      // db.transaction(tx => {
-      //   tx.executeSql(
-      //     `select * from todos;`,
-      //     null,
-      //     (_, { rows: { _array } }) => this.setState({ list: _array })
-      //   )
-      // })
-    // }
-   
-    // addTodo() {
-    //   if (this.state.input.value) {
-    //     db.transaction(
-    //       tx => {
-    //         tx.executeSql('insert or replace into todos (id, value) values (?, ?)',
-    //           [this.state.input.id, this.state.input.value],
-    //           () => {
-    //             this.setState({ input: {} })
-    //             this.update()
-    //           }
-    //         )
-    //       }
-    //     )
-    //   }
-    // }
-
-        // deleteTodo(id) {
-    //   db.transaction(
-    //     tx => {
-    //       tx.executeSql('delete from todos where id = ?;',
-    //         [id],
-    //         this.update()
-    //       )
-    //     }
-    //   )
-    // }
 
     componentDidMount() {
       try{
@@ -75,7 +34,6 @@ class App extends React.Component {
             `select * from todos;`,
             null,
             (_, { rows: { _array } }) => {
-              // this.setState({ list: _array })
               _array.map(val=>{
                 console.log(val)
                 this.props.addTodo({text:val.value})
@@ -93,15 +51,6 @@ class App extends React.Component {
         console.log(err)
       }
     }
-  
-
-  
-    // updateInput(value) {
-    //   const newInput = update(this.state.input, {
-    //     value: { $set: value }
-    //   });
-    //   this.setState({ input: newInput })
-    // }
 
     onTodoPress({id,text,completed}) {
       this.setState({ todo:{id, text, completed} })
@@ -113,9 +62,6 @@ class App extends React.Component {
     }
   
     render() {
-        // console.log(uuidv4())
-        // console.log(this.state)
-        // console.log(this.props)
         const todos = this.props.todos.filter((item)=>{
             return !item.completed
         })
