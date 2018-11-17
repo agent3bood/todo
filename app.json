@@ -17,7 +17,8 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.fnyan.todo"
+      "package": "com.fnyan.todo",
+      "versionCode": 2
     }
   }
 }
