@@ -27,7 +27,6 @@ class App extends React.Component {
           null,
           (_, { rows: { _array } }) => {
             _array.map(val => {
-              console.log(val);
               this.props.addTodo({ text: val.value });
               db.transaction(tx2 => {
                 tx2.executeSql("delete from todos where id = ?;", [val.id]);
@@ -82,6 +81,7 @@ class App extends React.Component {
               <ListItem
                 key={item.id}
                 title={item.text}
+                disabled={item.id === this.state.todo.id}
                 onPress={() => this.onTodoPress(item)}
                 titleNumberOfLines={100}
                 titleStyle={{ textAlign: "right" }}
