@@ -14,6 +14,7 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.fnyan.todo",
       "supportsTablet": true
     },
     "android": {
